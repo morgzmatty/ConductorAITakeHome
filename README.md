@@ -1,6 +1,6 @@
 # PDF Largest Number Finder
 
-This tool helps you find the largest number in a PDF document, applying appropriate multipliers such as "in millions," "in billions," or "in thousands" to the numbers found in charts or tables. The tool is designed to process documents that contain financial summaries, technical tables, and other large-number data.
+This tool helps you find the largest number in a PDF document. It could also apply the appropriate multipliers such as "in millions," "in billions," or "in thousands" to the numbers found in charts or tables. The tool is designed to process documents that contain financial summaries, technical tables, and other large-number data.
 
 ## Features
 
@@ -38,6 +38,13 @@ Once installed, you can use the tool by running the following command:
 largest-number path/to/your/document.pdf
 ```
 Replace path/to/your/document.pdf with the actual path to the PDF file you’d like to analyze.
+
+To find the largest number when taking natural language guidance from the document into consideration,
+you can run the command with the ```--include-bonus``` flag:
+
+```bash
+largest-number path/to/your/document.pdf --include-bonus`
+```
 
 ## Development
 

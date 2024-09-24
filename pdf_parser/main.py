@@ -31,7 +31,7 @@ def is_in_sentence(text, number_start_pos):
         return True
     return False
 
-def find_numbers_in_text(text, multiplier=1):
+def find_numbers_in_text(text, multiplier=1, include_bonus=False):
     """
     Find numbers in the text and apply the current multiplier to them.
     Args:
@@ -41,29 +41,43 @@ def find_numbers_in_text(text, multiplier=1):
         list: A list of numbers found in the text after applying the multiplier.
     """
     numbers = []
+
+    pattern = r'\b(\d{1,3}(?:,\d{3})*(?:\.\d+)?)\b'
     
     # Regex pattern to capture numbers and optional scaling keywords ('million', 'billion', etc.)
-    pattern = r'\b(\d{1,3}(?:,\d{3})*(?:\.\d+)?)(?:\s?(M|million|billion|thousand))?\b'
+    if include_bonus:
+        pattern = r'\b(\d{1,3}(?:,\d{3})*(?:\.\d+)?)(?:\s?(M|million|billion|thousand))?\b'
+    
+    if include_bonus:
+        # Find all numeric values and their possible scale (million, billion, etc.)
+        matches = re.finditer(pattern, text, re.IGNORECASE)
 
-    # Find all numeric values and their possible scale (million, billion, etc.)
-    matches = re.finditer(pattern, text, re.IGNORECASE)
+        for match in matches:
+            num_str, scale = match.groups()
+            number_start_pos = match.start()
 
-    for match in matches:
-        num_str, scale = match.groups()
-        number_start_pos = match.start()
+            # Remove commas from the number and convert to float
+            number = float(num_str.replace(',', ''))
 
-        # Remove commas from the number and convert to float
-        number = float(num_str.replace(',', ''))
+            # If the number is part of a sentence, we will not apply the multiplier unless followed by a scale
+            if is_in_sentence(text, number_start_pos):
+                if scale:
+                    number *= SENTENCE_MULTIPLIERS.get(scale.lower(), 1)
+            else:
+                # If it's not part of a sentence, apply the current chart-based multiplier
+                number *= multiplier
 
-        # If the number is part of a sentence, we will not apply the multiplier unless followed by a scale
-        if is_in_sentence(text, number_start_pos):
-            if scale:
-                number *= SENTENCE_MULTIPLIERS.get(scale.lower(), 1)
-        else:
-            # If it's not part of a sentence, apply the current chart-based multiplier
-            number *= multiplier
+            numbers.append(number)
+    else:
+        # Find all numeric values in the text
+        matches = re.finditer(pattern, text)
 
-        numbers.append(number)
+        for match in matches:
+            num_str = match.group()
+
+            # Remove commas from the number and convert to float
+            number = float(num_str.replace(',', ''))
+            numbers.append(number)
 
     return numbers
 
@@ -82,7 +96,7 @@ def update_multiplier(text):
     else:
         return 1  # Default multiplier if no scaling keyword is found
 
-def find_largest_number_in_pdf(pdf_file):
+def find_largest_number_in_pdf(pdf_file, include_bonus=False):
     """
     Find the largest number in a PDF document.
     Args:
@@ -101,22 +115,32 @@ def find_largest_number_in_pdf(pdf_file):
         text = page.extract_text()
 
         if text:
-            current_multiplier = 1  # Reset multiplier to 1 at the start of each page
+            if include_bonus:
+                current_multiplier = 1  # Reset multiplier to 1 at the start of each page
 
-            # Process the text line by line
-            lines = text.splitlines()
-            for line in lines:
-                # Check for multiplier changes in the line
-                new_multiplier = update_multiplier(line)
-                if new_multiplier != 1:
-                    current_multiplier = new_multiplier
+                # Process the text line by line
+                lines = text.splitlines()
+                for line in lines:
+                    # Check for multiplier changes in the line
+                    new_multiplier = update_multiplier(line)
+                    if new_multiplier != 1:
+                        current_multiplier = new_multiplier
 
-                # Check if the line contains a sentence boundary to reset the multiplier
-                if re.search(r'[\.\?!]\s+[A-Z]', line):
-                    current_multiplier = 1
+                    # Check if the line contains a sentence boundary to reset the multiplier
+                    if re.search(r'[\.\?!]\s+[A-Z]', line):
+                        current_multiplier = 1
 
+                    numbers = find_numbers_in_text(line, multiplier=current_multiplier, include_bonus=include_bonus)
+                    if numbers:
+                        max_number_on_line = max(numbers)
+                        if max_number_on_line > largest_number:
+                            largest_number = max_number_on_line
+                            page_of_largest = page_num + 1  # PyPDF2 uses 0-indexing, so add 1 to display the correct page number
+            else: 
+
+                numbers = find_numbers_in_text(text, include_bonus=include_bonus)
+                
                 # Search for numbers in this line and apply the current multiplier
-                numbers = find_numbers_in_text(line, multiplier=current_multiplier)
                 if numbers:
                     max_number_on_line = max(numbers)
                     if max_number_on_line > largest_number:
@@ -127,17 +151,21 @@ def find_largest_number_in_pdf(pdf_file):
 
 @click.command()
 @click.argument('file')
-def main(file):
+@click.option('--include-bonus', is_flag=True, help='Include the bonus feature to find largest num.')
+def main(file, include_bonus = False):
     """
     Find the largest number in a PDF document.
     Args:
         file (str): The path to the PDF file.
+        include_bonus (bool): Include the bonus feature to find the largest number.
     """
-    largest_number, page_of_largest = find_largest_number_in_pdf(file)
+  
+    largest_number, page_of_largest = find_largest_number_in_pdf(file, include_bonus=include_bonus)
     if largest_number is not None:
         click.echo(f"The largest number in the document is: {largest_number} (found on page {page_of_largest})")
     else:
         click.echo("No numbers were found in the document.")
+
 
 if __name__ == "__main__":
     main()

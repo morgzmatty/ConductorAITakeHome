@@ -10,7 +10,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'largest-number=pdf_parser.main:main',  # Command-line tool name
+            'largest-number=pdf_parser.main:main',
         ],
     },
 )
