@@ -33,7 +33,29 @@ pip install .
 ## Usage
 
 Once installed, you can use the tool by running the following command:
+
 ```bash
 largest-number path/to/your/document.pdf
 ```
+Replace path/to/your/document.pdf with the actual path to the PDF file you’d like to analyze.
 
+## Development
+
+If you want to modify or contribute to the project, follow these steps:
+
+### 1. Install the project in “editable” mode
+
+To install the project in a way that allows you to edit it while testing, run:
+
+```bash
+pip install -e .
+```
+This allows you to make changes to the code and immediately see the effects without reinstalling the package.
+
+### 2. Running the script directly
+
+You can also run the script directly by executing:
+
+```bash
+python -m my_project.main path/to/your/document.pdf
+```
