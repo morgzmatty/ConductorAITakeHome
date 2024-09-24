@@ -18,5 +18,22 @@ To install and run the project, follow the steps below.
 Clone the repository using Git:
 
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+git clone git@github.com:morgzmatty/ConductorAITakeHome.git
+cd ConductorAITakeHome
+```
+
+### 2. Install Requirements
+
+Install the required dependencies using pip:
+
+```bash
+pip install .
+```
+
+## Usage
+
+Once installed, you can use the tool by running the following command:
+```bash
+largest-number path/to/your/document.pdf
+```
+

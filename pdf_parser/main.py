@@ -1,5 +1,5 @@
 import re
-import argparse
+import click
 from PyPDF2 import PdfReader
 
 SENTENCE_MULTIPLIERS = {
@@ -105,17 +105,15 @@ def find_largest_number_in_pdf(pdf_file):
 # Path to your PDF file
 # pdf_file = '/Users/morganmattone/Desktop/FY25AirForceWorkingCapitalFund.pdf'
 
-def main(file_path):
-    largest_number, page_of_largest = find_largest_number_in_pdf(file_path)
+@click.command()
+@click.argument('file')
+def main(file):
+    """Find the largest number in a PDF document."""
+    largest_number, page_of_largest = find_largest_number_in_pdf(file)
     if largest_number is not None:
-        print(f"The largest number in the document is: {largest_number} (found on page {page_of_largest})")
+        click.echo(f"The largest number in the document is: {largest_number} (found on page {page_of_largest})")
     else:
-        print("No numbers were found in the document.")
+        click.echo("No numbers were found in the document.")
 
-# If this script is run directly from the command line
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Find the largest number in a PDF.")
-    parser.add_argument("file", help="Path to the PDF file")
-    args = parser.parse_args()
-
-    main(args.file)
+    main()
