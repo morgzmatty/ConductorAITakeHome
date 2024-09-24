@@ -82,10 +82,17 @@ def update_multiplier(text):
     else:
         return 1  # Default multiplier if no scaling keyword is found
 
-# Main function to parse the document and apply multipliers to numbers correctly
 def find_largest_number_in_pdf(pdf_file):
-    largest_number = float('-inf')  # Initialize to a very small number
-    page_of_largest = None  # Variable to store the page number of the largest number
+    """
+    Find the largest number in a PDF document.
+    Args:
+        pdf_file (str): The path to the PDF file.
+    Returns:
+        tuple: A tuple containing the largest number found and the page number where it was found.
+    """
+
+    largest_number = float('-inf')
+    page_of_largest = None
 
     reader = PdfReader(pdf_file)
     
@@ -118,13 +125,14 @@ def find_largest_number_in_pdf(pdf_file):
 
     return largest_number, page_of_largest
 
-# Path to your PDF file
-# pdf_file = '/Users/morganmattone/Desktop/FY25AirForceWorkingCapitalFund.pdf'
-
 @click.command()
 @click.argument('file')
 def main(file):
-    """Find the largest number in a PDF document."""
+    """
+    Find the largest number in a PDF document.
+    Args:
+        file (str): The path to the PDF file.
+    """
     largest_number, page_of_largest = find_largest_number_in_pdf(file)
     if largest_number is not None:
         click.echo(f"The largest number in the document is: {largest_number} (found on page {page_of_largest})")
