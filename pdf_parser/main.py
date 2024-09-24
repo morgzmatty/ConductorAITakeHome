@@ -10,8 +10,15 @@ SENTENCE_MULTIPLIERS = {
     'b': 1_000_000_000,
 }
 
-# Function to check if a number is in a sentence
 def is_in_sentence(text, number_start_pos):
+    """
+    Check if a number is part of a sentence by looking at the text before and after the number.
+    Args:
+        text (str): The full text where the number was found.
+        number_start_pos (int): The starting position of the number in the text.
+    Returns:
+        bool: True if the number is part of a sentence, False otherwise.
+    """
     # Check a window of 50 characters before and after the number for sentence structure
     window_size = 50
     before_text = text[max(0, number_start_pos - window_size):number_start_pos]
@@ -20,10 +27,19 @@ def is_in_sentence(text, number_start_pos):
     # Check for sentence-ending punctuation followed by a capital letter
     if re.search(r'[\.\?!]\s+[A-Z]', before_text):
         return True
+    if re.search(r'[\.\?!]\s+[A-Z]', after_text):
+        return True
     return False
 
-# Function to find numbers in text and apply the current multiplier to them
 def find_numbers_in_text(text, multiplier=1):
+    """
+    Find numbers in the text and apply the current multiplier to them.
+    Args:
+        text (str): The text to search for numbers.
+        multiplier (int): The current multiplier to apply to the numbers.
+    Returns:
+        list: A list of numbers found in the text after applying the multiplier.
+    """
     numbers = []
     
     # Regex pattern to capture numbers and optional scaling keywords ('million', 'billion', etc.)
