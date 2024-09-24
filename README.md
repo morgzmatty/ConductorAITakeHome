@@ -39,11 +39,13 @@ largest-number path/to/your/document.pdf
 ```
 Replace path/to/your/document.pdf with the actual path to the PDF file you’d like to analyze.
 
+### Bonus Challenge
+
 To find the largest number when taking natural language guidance from the document into consideration,
 you can run the command with the ```--include-bonus``` flag:
 
 ```bash
-largest-number path/to/your/document.pdf --include-bonus`
+largest-number path/to/your/document.pdf --include-bonus
 ```
 
 ## Development
