@@ -140,12 +140,11 @@ def find_largest_number_in_pdf(pdf_file, include_bonus=False):
 
                 numbers = find_numbers_in_text(text, include_bonus=include_bonus)
                 
-                # Search for numbers in this line and apply the current multiplier
                 if numbers:
                     max_number_on_line = max(numbers)
                     if max_number_on_line > largest_number:
                         largest_number = max_number_on_line
-                        page_of_largest = page_num + 1  # PyPDF2 uses 0-indexing, so add 1 to display the correct page number
+                        page_of_largest = page_num + 1
 
     return largest_number, page_of_largest
 
